@@ -1,6 +1,7 @@
 use crate::games::game_modes::GameMode;
 use crate::models::game::{Game, Player};
-use inquire::{MultiSelect, Select, Text};
+use inquire::{InquireError, MultiSelect, Select, Text};
+use std::error::Error;
 use std::io;
 
 pub fn game_mode_selector() -> GameMode {
@@ -68,43 +69,36 @@ pub fn read_player(player_number: u8) -> String {
     }
 }
 
-pub fn single_player_selector<'a>(game: &'a mut Game, message: String) {
-    loop {
-        let player = Select::new(
-            &message,
-            vec![&game.player1, &game.player2, &game.player3, &game.player4],
-        )
-        .prompt();
-        match player {
-            Ok(_) => return,
-            Err(_) => {
-                println!("An error occurred while selecting value. Please try again.");
-                continue;
-            }
-        }
-    }
+pub fn single_player_selector<'a>(
+    game: &'a mut Game,
+    message: String,
+) -> Result<&'a mut Player, InquireError> {
+    let player = Select::new(
+        &message,
+        vec![
+            &mut game.player1,
+            &mut game.player2,
+            &mut game.player3,
+            &mut game.player4,
+        ],
+    )
+    .prompt();
+    return player;
 }
 
-pub fn double_player_selector<'a>(game: &'a Game, game_mode: &GameMode) -> Vec<&'a Player> {
-    let msg = format!("Who is playing {game_mode}?");
-    loop {
-        let players = MultiSelect::new(
-            &msg,
-            vec![&game.player1, &game.player2, &game.player3, &game.player4],
-        )
-        .prompt();
-        match players {
-            Ok(player_vec) => {
-                if player_vec.len() != 2 {
-                    println!("Please select 2 players.");
-                    continue;
-                }
-                return player_vec;
-            }
-            Err(_) => {
-                println!("An error occurred while selecting players. Please try again.");
-                continue;
-            }
-        }
-    }
+pub fn double_player_selector<'a>(
+    game: &'a mut Game,
+    message: String,
+) -> Result<Vec<&'a mut Player>, InquireError> {
+    let players = MultiSelect::new(
+        &message,
+        vec![
+            &mut game.player1,
+            &mut game.player2,
+            &mut game.player3,
+            &mut game.player4,
+        ],
+    )
+    .prompt();
+    return players;
 }

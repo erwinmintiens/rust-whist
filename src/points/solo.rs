@@ -24,7 +24,10 @@ pub fn solo_points(game: &mut Game, tricks_to_achieve: u8, tricks_achieved: u8) 
         6 => SoloType::Solo6,
         7 => SoloType::Solo7,
         8 => SoloType::Solo8,
-        _ => SoloType::Solo6,
+        _ => {
+            eprintln!("Unexpected amount of tricks_to_achieve");
+            SoloType::Solo6
+        }
     };
     solo(game, tricks_achieved, solo_type);
 }
