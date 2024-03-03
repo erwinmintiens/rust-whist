@@ -108,3 +108,17 @@ impl fmt::Display for Player {
         write!(f, "{}", &self.name)
     }
 }
+
+pub struct Points {
+    pub playing_points: i32,
+    pub opposing_points: i32,
+}
+
+impl Points {
+    pub fn new() -> Self {
+        Points {
+            playing_points: 0,
+            opposing_points: 0,
+        }
+    }
+}
