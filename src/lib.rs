@@ -1,8 +1,9 @@
 mod games;
 mod io;
+mod models;
+mod points;
 mod utils;
-use crate::io::game_mode_selector;
-use crate::utils::read_player;
+use crate::io::{game_mode_selector, read_player};
 use games::abondance::{run_abondance, run_solo_slim};
 use games::game_modes::GameMode;
 use games::miserie::{run_grote_miserie, run_kleine_miserie, run_miserie_op_tafel};
@@ -10,37 +11,40 @@ use games::piccolo::run_piccolo;
 use games::solo::run_solo;
 use games::troel::run_troel;
 use games::vragen_en_meegaan::run_vragen_en_meegaan;
+use models::game::{Game, Player};
 
 pub fn start_game() {
-    let players = player_selector();
+    let (player1, player2, player3, player4) = player_selector();
     let game_mode = game_mode_selector();
     println!("Chosen game mode: {game_mode}");
-    run(players, game_mode);
+    let mut game = Game::new(player1, player2, player3, player4);
+    game = run(game, game_mode);
 }
 
-fn player_selector() -> [String; 4] {
-    let mut player1 = String::new();
-    let mut player2 = String::new();
-    let mut player3 = String::new();
-    let mut player4 = String::new();
+fn player_selector() -> (Player, Player, Player, Player) {
     println!("Provide 4 players:");
-    player1 = read_player(player1, 1);
-    player2 = read_player(player2, 2);
-    player3 = read_player(player3, 3);
-    player4 = read_player(player4, 4);
-    [player1, player2, player3, player4]
+    let player1_name = read_player(1_u8);
+    let player2_name = read_player(2_u8);
+    let player3_name = read_player(3_u8);
+    let player4_name = read_player(4_u8);
+    let player1 = Player::new(1_u8, player1_name);
+    let player2 = Player::new(2_u8, player2_name);
+    let player3 = Player::new(3_u8, player3_name);
+    let player4 = Player::new(4_u8, player4_name);
+    (player1, player2, player3, player4)
 }
 
-fn run(players: [String; 4], game_mode: GameMode) {
-    match game_mode {
-        GameMode::Solo => run_solo(&players, game_mode),
-        GameMode::VragenEnMeegaan => run_vragen_en_meegaan(),
-        GameMode::Troel => run_troel(),
-        GameMode::Piccolo => run_piccolo(),
-        GameMode::KleineMiserie => run_kleine_miserie(),
-        GameMode::GroteMiserie => run_grote_miserie(),
-        GameMode::MiserieOpTafel => run_miserie_op_tafel(),
-        GameMode::Abondance => run_abondance(),
-        GameMode::SoloSlim => run_solo_slim(),
-    }
+fn run(mut game: Game, game_mode: GameMode) -> Game {
+    game = match game_mode {
+        GameMode::Solo => run_solo(game, game_mode),
+        GameMode::VragenEnMeegaan => run_vragen_en_meegaan(game, game_mode),
+        GameMode::Troel => run_troel(game, game_mode),
+        GameMode::Piccolo => run_piccolo(game, game_mode),
+        GameMode::KleineMiserie => run_kleine_miserie(game, game_mode),
+        GameMode::GroteMiserie => run_grote_miserie(game, game_mode),
+        GameMode::MiserieOpTafel => run_miserie_op_tafel(game, game_mode),
+        GameMode::Abondance => run_abondance(game, game_mode),
+        GameMode::SoloSlim => run_solo_slim(game, game_mode),
+    };
+    game
 }
