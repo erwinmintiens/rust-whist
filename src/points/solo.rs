@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::models::game::{Game, Player, Points};
 use crate::utils::{add_points_to_players, get_playing_and_opposing_players};
 
@@ -5,6 +7,16 @@ enum SoloType {
     Solo6,
     Solo7,
     Solo8,
+}
+
+impl fmt::Display for SoloType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            SoloType::Solo6 => write!(f, "Solo6"),
+            SoloType::Solo7 => write!(f, "Solo7"),
+            SoloType::Solo8 => write!(f, "Solo8"),
+        }
+    }
 }
 
 pub fn solo_points(game: &mut Game, tricks_to_achieve: u8, tricks_achieved: u8) {
@@ -19,7 +31,13 @@ pub fn solo_points(game: &mut Game, tricks_to_achieve: u8, tricks_achieved: u8) 
 
 fn solo(game: &mut Game, tricks_achieved: u8, solo_type: SoloType) {
     let (mut playing_players, mut opposing_players) = get_playing_and_opposing_players(game);
-    validate_players(&playing_players, &opposing_players);
+    match validate_players(&playing_players, &opposing_players) {
+        Ok(_) => {}
+        Err(e) => panic!(
+            "Validating players failed for solo game {}: {}",
+            solo_type, e
+        ),
+    };
     let playing_player = &mut playing_players[0];
     let points = match solo_type {
         SoloType::Solo6 => solo_6(tricks_achieved),
@@ -71,27 +89,33 @@ fn solo_8(tricks_achieved: u8) -> Points {
     let mut points = Points::new();
     if tricks_achieved < 8 {
         // playing player LOSES
-        points.playing_points = -21 - 3 * (7 - tricks_achieved as i32);
+        points.playing_points = -24 - 3 * (7 - tricks_achieved as i32);
         points.opposing_points = 16 + 2 * (7 - tricks_achieved as i32);
     } else {
         // playing player WINS
-        points.playing_points = 21 + 3 * (tricks_achieved as i32 - 7);
+        points.playing_points = 21 + 3 * (tricks_achieved as i32 - 8);
         points.opposing_points = 0;
     }
     points
 }
 
-fn validate_players(playing_players: &Vec<&mut Player>, opposing_players: &Vec<&mut Player>) {
+fn validate_players(
+    playing_players: &Vec<&mut Player>,
+    opposing_players: &Vec<&mut Player>,
+) -> Result<(), &'static str> {
     if playing_players.len() != 1 {
-        panic!("The amount of playing players is not equal to 1 in a game of solo!");
+        return Err("The amount of playing players is not equal to 1 in a game of solo!");
     }
     if opposing_players.len() != 3 {
-        panic!("The amount of opposing_players is not equal to 3 in a game of solo!");
+        return Err("The amount of opposing_players is not equal to 3 in a game of solo!");
     }
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
+    use std::vec;
+
     use crate::models::game::Game;
 
     use super::*;
@@ -110,24 +134,10 @@ mod tests {
     }
 
     #[test]
-    fn test_solo_6_points() {
+    fn test_solo_6_success_points() {
         let mut game = setup_game();
-        game.player1.playing_player = true;
-
-        solo(&mut game, 4, SoloType::Solo6);
-        assert_eq!(game.player1.total_points(), -18);
-        assert_eq!(game.player2.total_points(), 12);
-        assert_eq!(game.player3.total_points(), 12);
-        assert_eq!(game.player4.total_points(), 12);
-        assert!(game.player1.succeeded_current_round == false);
-        assert!(game.player2.succeeded_current_round == true);
-        assert!(game.player3.succeeded_current_round == true);
-        assert!(game.player4.succeeded_current_round == true);
-
-        game.clear_all_player_points();
-
-        game.player1.playing_player = false;
         game.player2.playing_player = true;
+
         solo(&mut game, 8, SoloType::Solo6);
         assert_eq!(game.player2.total_points(), 18);
         assert_eq!(game.player1.total_points(), 0);
@@ -137,5 +147,130 @@ mod tests {
         assert!(game.player2.succeeded_current_round == true);
         assert!(game.player3.succeeded_current_round == false);
         assert!(game.player4.succeeded_current_round == false);
+    }
+    #[test]
+    fn test_solo_6_failure_points() {
+        let mut game = setup_game();
+        game.player1.playing_player = true;
+
+        solo(&mut game, 4, SoloType::Solo6);
+        assert_eq!(game.player2.total_points(), 12);
+        assert_eq!(game.player3.total_points(), 12);
+        assert_eq!(game.player4.total_points(), 12);
+
+        assert_eq!(game.player1.total_points(), -18);
+
+        assert!(game.player2.succeeded_current_round == true);
+        assert!(game.player3.succeeded_current_round == true);
+        assert!(game.player4.succeeded_current_round == true);
+
+        assert!(game.player1.succeeded_current_round == false);
+    }
+
+    #[test]
+    fn test_solo_7_success_points() {
+        let mut game = setup_game();
+        game.player3.playing_player = true;
+
+        solo(&mut game, 11, SoloType::Solo7);
+        assert_eq!(game.player1.total_points(), 0);
+        assert_eq!(game.player2.total_points(), 0);
+        assert_eq!(game.player4.total_points(), 0);
+
+        assert_eq!(game.player3.total_points(), 27);
+
+        assert!(game.player1.succeeded_current_round == false);
+        assert!(game.player2.succeeded_current_round == false);
+        assert!(game.player4.succeeded_current_round == false);
+
+        assert!(game.player3.succeeded_current_round == true);
+    }
+
+    #[test]
+    fn test_solo_7_failure_points() {
+        let mut game = setup_game();
+        game.player4.playing_player = true;
+
+        solo(&mut game, 3, SoloType::Solo7);
+        assert_eq!(game.player1.total_points(), 18);
+        assert_eq!(game.player2.total_points(), 18);
+        assert_eq!(game.player3.total_points(), 18);
+
+        assert_eq!(game.player4.total_points(), -27);
+
+        assert!(game.player1.succeeded_current_round == true);
+        assert!(game.player2.succeeded_current_round == true);
+        assert!(game.player3.succeeded_current_round == true);
+
+        assert!(game.player4.succeeded_current_round == false);
+    }
+
+    #[test]
+    fn test_solo_8_success_points() {
+        let mut game = setup_game();
+        game.player3.playing_player = true;
+
+        solo(&mut game, 8, SoloType::Solo8);
+        assert_eq!(game.player1.total_points(), 0);
+        assert_eq!(game.player2.total_points(), 0);
+        assert_eq!(game.player4.total_points(), 0);
+
+        assert_eq!(game.player3.total_points(), 21);
+
+        assert!(game.player1.succeeded_current_round == false);
+        assert!(game.player2.succeeded_current_round == false);
+        assert!(game.player4.succeeded_current_round == false);
+
+        assert!(game.player3.succeeded_current_round == true);
+    }
+
+    #[test]
+    fn test_solo_8_failure_points() {
+        let mut game = setup_game();
+        game.player4.playing_player = true;
+
+        solo(&mut game, 7, SoloType::Solo8);
+        assert_eq!(game.player1.total_points(), 16);
+        assert_eq!(game.player2.total_points(), 16);
+        assert_eq!(game.player3.total_points(), 16);
+
+        assert_eq!(game.player4.total_points(), -24);
+
+        assert!(game.player1.succeeded_current_round == true);
+        assert!(game.player2.succeeded_current_round == true);
+        assert!(game.player3.succeeded_current_round == true);
+
+        assert!(game.player4.succeeded_current_round == false);
+    }
+
+    #[test]
+    fn test_player_validation_success() {
+        let mut game = setup_game();
+        let playing_players = vec![&mut game.player1];
+        let opposing_players = vec![&mut game.player3, &mut game.player2, &mut game.player4];
+        let result = validate_players(&playing_players, &opposing_players);
+        assert!(result == Ok(()));
+    }
+
+    #[test]
+    fn test_player_validation_amount_of_playing_players_failure() {
+        let mut game = setup_game();
+        let playing_players = vec![&mut game.player1, &mut game.player4];
+        let opposing_players = vec![&mut game.player3];
+        let result = validate_players(&playing_players, &opposing_players);
+        assert!(
+            result == Err("The amount of playing players is not equal to 1 in a game of solo!")
+        );
+    }
+
+    #[test]
+    fn test_player_validation_amount_of_opposing_players_failure() {
+        let mut game = setup_game();
+        let playing_players = vec![&mut game.player1];
+        let opposing_players = vec![&mut game.player3];
+        let result = validate_players(&playing_players, &opposing_players);
+        assert!(
+            result == Err("The amount of opposing_players is not equal to 3 in a game of solo!")
+        );
     }
 }
