@@ -24,6 +24,10 @@ pub fn run_vragen_en_meegaan(mut game: Game, game_mode: GameMode) -> Game {
                     continue;
                 }
             };
+        if playing_players.len() != 2 {
+            eprintln!("The amount of playing players is not equal to 2.");
+            continue;
+        }
         for player in playing_players.iter_mut() {
             player.playing_player = true;
         }
