@@ -1,8 +1,8 @@
-use rust_whist::start_game;
+use rust_whist::new_game;
 use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     dbg!(args);
-    start_game();
+    new_game();
 }

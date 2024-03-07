@@ -1,8 +1,9 @@
 use crate::games::game_modes::GameMode;
-use crate::models::game::{Game, Player};
+use crate::models::{
+    game::{Game, Player},
+    menu::MainMenuOptions,
+};
 use inquire::{InquireError, MultiSelect, Select, Text};
-use std::error::Error;
-use std::io;
 
 pub fn game_mode_selector() -> GameMode {
     loop {
@@ -22,7 +23,7 @@ pub fn game_mode_selector() -> GameMode {
         match answer {
             Ok(choice) => return choice,
             Err(_) => {
-                println!("An error occurred while selecting choice. Please try again.");
+                do_you_want_to_quit();
                 continue;
             }
         };
@@ -101,4 +102,39 @@ pub fn double_player_selector<'a>(
     )
     .prompt();
     return players;
+}
+
+pub fn do_you_want_to_quit() {
+    println!();
+    let options: Vec<&str> = vec!["No", "Yes"];
+
+    let answer = Select::new("Do you want to quit?", options).prompt();
+    match answer {
+        Ok(choice) => {
+            if choice == "Yes" {
+                std::process::exit(0);
+            }
+        }
+        Err(_) => {
+            println!("An error occurred while selecting choice. Please try again.");
+        }
+    };
+}
+
+pub fn main_menu() -> Result<MainMenuOptions, &'static str> {
+    println!();
+    let options: Vec<&str> = vec!["Next round", "Display points table", "Settings", "Quit"];
+    let answer = Select::new("Choose your next action:", options).prompt();
+    match answer {
+        Ok(choice) => match choice {
+            "Next round" => return Ok(MainMenuOptions::NextRound),
+            "Display points table" => return Ok(MainMenuOptions::DisplayScore),
+            "Settings" => return Ok(MainMenuOptions::Settings),
+            "Quit" => return Ok(MainMenuOptions::Quit),
+            _ => return Err("An unexpected choice occurred on the main menu"),
+        },
+        Err(_) => {
+            return Err("An error occurred while selecting choice. Please try again.");
+        }
+    };
 }

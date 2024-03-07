@@ -1,5 +1,6 @@
 use std::{fmt, io::Write};
 
+#[derive(Debug)]
 pub struct Game {
     pub player1: Player,
     pub player2: Player,
@@ -68,8 +69,16 @@ impl Game {
             _ => {}
         }
     }
+
+    pub fn display_all_player_points(&self) {
+        println!("{}: {}", self.player1.name, self.player1.total_points());
+        println!("{}: {}", self.player2.name, self.player2.total_points());
+        println!("{}: {}", self.player3.name, self.player3.total_points());
+        println!("{}: {}", self.player4.name, self.player4.total_points());
+    }
 }
 
+#[derive(Debug)]
 pub struct Player {
     pub id: u8,
     pub name: String,
@@ -109,6 +118,7 @@ impl fmt::Display for Player {
     }
 }
 
+#[derive(Debug, Eq, PartialOrd, Ord)]
 pub struct Points {
     pub playing_points: i32,
     pub opposing_points: i32,
@@ -120,5 +130,11 @@ impl Points {
             playing_points: 0,
             opposing_points: 0,
         }
+    }
+}
+
+impl PartialEq for Points {
+    fn eq(&self, other: &Self) -> bool {
+        self.playing_points == other.playing_points && self.opposing_points == other.opposing_points
     }
 }
