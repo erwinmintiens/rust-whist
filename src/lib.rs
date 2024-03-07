@@ -49,7 +49,8 @@ fn main_menu(game: Game) -> Game {
     game
 }
 
-pub fn start_next_round(game: Game) -> Game {
+pub fn start_next_round(mut game: Game) -> Game {
+    game.reset_all_playing_players();
     let game_mode = game_mode_selector();
     println!("Chosen game mode: {game_mode}");
     return run(game, game_mode);

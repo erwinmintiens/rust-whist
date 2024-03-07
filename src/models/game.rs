@@ -23,6 +23,13 @@ impl Game {
         player.succeeded_current_round = true;
     }
 
+    pub fn reset_all_playing_players(&mut self) {
+        self.player1.playing_player = false;
+        self.player2.playing_player = false;
+        self.player3.playing_player = false;
+        self.player4.playing_player = false;
+    }
+
     pub fn fail_all_players(&mut self) {
         self.player1.succeeded_current_round = false;
         self.player2.succeeded_current_round = false;
