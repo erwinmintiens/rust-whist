@@ -145,3 +145,69 @@ impl PartialEq for Points {
         self.playing_points == other.playing_points && self.opposing_points == other.opposing_points
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    fn setup_game() -> Game {
+        let player1 = Player::new(1_u8, String::from("Player1"));
+        let player2 = Player::new(2_u8, String::from("Player2"));
+        let player3 = Player::new(3_u8, String::from("Player3"));
+        let player4 = Player::new(4_u8, String::from("Player4"));
+        Game {
+            player1,
+            player2,
+            player3,
+            player4,
+        }
+    }
+
+    mod game {
+        use super::*;
+
+        #[test]
+        fn test_resetting_playing_players() {
+            let mut game = setup_game();
+            game.player1.playing_player = true;
+            game.player2.playing_player = true;
+            game.player3.playing_player = true;
+            game.player4.playing_player = true;
+
+            game.reset_all_playing_players();
+
+            assert_eq!(game.player1.playing_player, false);
+            assert_eq!(game.player2.playing_player, false);
+            assert_eq!(game.player3.playing_player, false);
+            assert_eq!(game.player4.playing_player, false);
+        }
+    }
+
+    mod points {
+        use super::*;
+
+        #[test]
+        fn test_partial_eq() {
+            let points1 = Points {
+                playing_points: 12,
+                opposing_points: -5,
+            };
+            let points2 = Points {
+                playing_points: 12,
+                opposing_points: -5,
+            };
+            let points3 = Points {
+                playing_points: 12,
+                opposing_points: 0,
+            };
+            let points4 = Points {
+                playing_points: -2,
+                opposing_points: -5,
+            };
+
+            assert_eq!(points1 == points2, true);
+            assert_eq!(points1 == points3, false);
+            assert_eq!(points2 == points3, false);
+            assert_eq!(points1 == points4, false);
+        }
+    }
+}

@@ -87,7 +87,7 @@ pub fn single_player_selector<'a>(
     return player;
 }
 
-pub fn double_player_selector<'a>(
+pub fn multiple_player_selector<'a>(
     game: &'a mut Game,
     message: String,
 ) -> Result<Vec<&'a mut Player>, InquireError> {

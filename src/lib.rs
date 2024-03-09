@@ -6,7 +6,7 @@ mod utils;
 use crate::io::{do_you_want_to_quit, game_mode_selector, main_menu as menu_io, read_player};
 use games::abondance::{run_abondance, run_solo_slim};
 use games::game_modes::GameMode;
-use games::miserie::{run_grote_miserie, run_kleine_miserie, run_miserie_op_tafel};
+use games::miserie::{run_grote_miserie, run_kleine_miserie, run_miserie, run_miserie_op_tafel};
 use games::piccolo::run_piccolo;
 use games::solo::run_solo;
 use games::troel::run_troel;
@@ -80,9 +80,9 @@ fn run(mut game: Game, game_mode: GameMode) -> Game {
         GameMode::VragenEnMeegaan => run_vragen_en_meegaan(game, game_mode),
         GameMode::Troel => run_troel(game, game_mode),
         GameMode::Piccolo => run_piccolo(game, game_mode),
-        GameMode::KleineMiserie => run_kleine_miserie(game, game_mode),
-        GameMode::GroteMiserie => run_grote_miserie(game, game_mode),
-        GameMode::MiserieOpTafel => run_miserie_op_tafel(game, game_mode),
+        GameMode::KleineMiserie => run_miserie(game, game_mode),
+        GameMode::GroteMiserie => run_miserie(game, game_mode),
+        GameMode::MiserieOpTafel => run_miserie(game, game_mode),
         GameMode::Abondance => run_abondance(game, game_mode),
         GameMode::SoloSlim => run_solo_slim(game, game_mode),
     };
