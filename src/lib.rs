@@ -6,7 +6,7 @@ mod utils;
 use crate::io::{do_you_want_to_quit, game_mode_selector, main_menu as menu_io, read_player};
 use games::abondance::{run_abondance, run_solo_slim};
 use games::game_modes::GameMode;
-use games::miserie::{run_grote_miserie, run_kleine_miserie, run_miserie, run_miserie_op_tafel};
+use games::miserie::run_miserie;
 use games::piccolo::run_piccolo;
 use games::solo::run_solo;
 use games::troel::run_troel;

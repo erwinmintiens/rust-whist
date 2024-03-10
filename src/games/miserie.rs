@@ -1,9 +1,7 @@
 use super::game_modes::GameMode;
 use crate::io::{get_tricks_achieved, multiple_player_selector};
 use crate::models::game::Game;
-use crate::points::miserie::{
-    grote_miserie_points, kleine_miserie_points, miserie_op_tafel_points,
-};
+use crate::points::miserie::miserie_points;
 
 pub fn run_miserie(mut game: Game, game_mode: GameMode) -> Game {
     loop {
@@ -20,14 +18,6 @@ pub fn run_miserie(mut game: Game, game_mode: GameMode) -> Game {
         }
         break;
     }
-    let tricks_achieved = get_tricks_achieved(0, 13);
-    match game_mode {
-        GameMode::KleineMiserie => kleine_miserie_points(&mut game, tricks_achieved),
-        GameMode::GroteMiserie => grote_miserie_points(&mut game, tricks_achieved),
-        GameMode::MiserieOpTafel => miserie_op_tafel_points(&mut game, tricks_achieved),
-        _ => {
-            eprintln!("Unexpected game mode: {}", game_mode);
-        }
-    }
+    miserie_points(&mut game, game_mode);
     game
 }

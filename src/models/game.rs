@@ -18,6 +18,23 @@ impl Game {
         }
     }
 
+    pub fn get_all_playing_players(&self) -> Vec<&Player> {
+        let mut result: Vec<&Player> = vec![];
+        if self.player1.playing_player {
+            result.push(&self.player1);
+        }
+        if self.player2.playing_player {
+            result.push(&self.player2);
+        }
+        if self.player3.playing_player {
+            result.push(&self.player3);
+        }
+        if self.player4.playing_player {
+            result.push(&self.player4);
+        }
+        result
+    }
+
     pub fn fail_all_players_except(&mut self, player: &mut Player) {
         self.fail_all_players();
         player.succeeded_current_round = true;
@@ -92,6 +109,7 @@ pub struct Player {
     pub points: Vec<i32>,
     pub succeeded_current_round: bool,
     pub playing_player: bool,
+    pub tricks_achieved_current_round: Option<u8>,
 }
 
 impl Player {
@@ -102,6 +120,7 @@ impl Player {
             points: vec![],
             succeeded_current_round: true,
             playing_player: false,
+            tricks_achieved_current_round: None,
         }
     }
 
