@@ -362,4 +362,142 @@ mod tests {
             }
         }
     }
+    mod open_miserie {
+        use super::*;
+
+        mod success {
+
+            use super::*;
+
+            #[test]
+            fn test_1_player_1_succeeds() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player1, 0, &GameMode::MiserieOpTafel);
+
+                assert_eq!(game.player1.total_points(), 72);
+                assert_eq!(game.player2.total_points(), 0);
+                assert_eq!(game.player3.total_points(), 0);
+                assert_eq!(game.player4.total_points(), 0);
+            }
+
+            #[test]
+            fn test_2_players_2_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player1, 0, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 0, &GameMode::MiserieOpTafel);
+
+                assert_eq!(game.player1.total_points(), 72);
+                assert_eq!(game.player4.total_points(), 72);
+                assert_eq!(game.player3.total_points(), 0);
+                assert_eq!(game.player2.total_points(), 0);
+            }
+
+            #[test]
+            fn test_3_players_3_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 0, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player3, 0, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 0, &GameMode::MiserieOpTafel);
+
+                assert_eq!(game.player2.total_points(), 72);
+                assert_eq!(game.player3.total_points(), 72);
+                assert_eq!(game.player4.total_points(), 72);
+                assert_eq!(game.player1.total_points(), 0);
+            }
+        }
+
+        mod failure {
+            use super::*;
+
+            #[test]
+            fn test_1_player_0_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 1, &GameMode::MiserieOpTafel);
+                handle_opposing_players(
+                    &mut vec![&mut game.player1, &mut game.player3, &mut game.player4],
+                    1,
+                    &GameMode::MiserieOpTafel,
+                );
+
+                assert_eq!(game.player2.total_points(), -72);
+                assert_eq!(game.player3.total_points(), 48);
+                assert_eq!(game.player4.total_points(), 48);
+                assert_eq!(game.player1.total_points(), 48);
+            }
+
+            #[test]
+            fn test_2_players_0_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player3, 1, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 1, &GameMode::MiserieOpTafel);
+                handle_opposing_players(
+                    &mut vec![&mut game.player1, &mut game.player2],
+                    2,
+                    &GameMode::MiserieOpTafel,
+                );
+
+                assert_eq!(game.player1.total_points(), 96);
+                assert_eq!(game.player2.total_points(), 96);
+                assert_eq!(game.player3.total_points(), -72);
+                assert_eq!(game.player4.total_points(), -72);
+            }
+
+            #[test]
+            fn test_2_players_1_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player3, 1, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 0, &GameMode::MiserieOpTafel);
+                handle_opposing_players(
+                    &mut vec![&mut game.player1, &mut game.player2],
+                    1,
+                    &GameMode::MiserieOpTafel,
+                );
+
+                assert_eq!(game.player1.total_points(), 48);
+                assert_eq!(game.player2.total_points(), 48);
+                assert_eq!(game.player3.total_points(), -72);
+                assert_eq!(game.player4.total_points(), 72);
+            }
+
+            #[test]
+            fn test_3_players_0_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 1, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player3, 1, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 1, &GameMode::MiserieOpTafel);
+                handle_opposing_players(&mut vec![&mut game.player1], 3, &GameMode::MiserieOpTafel);
+
+                assert_eq!(game.player1.total_points(), 144);
+                assert_eq!(game.player2.total_points(), -72);
+                assert_eq!(game.player3.total_points(), -72);
+                assert_eq!(game.player4.total_points(), -72);
+            }
+            #[test]
+            fn test_3_players_1_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 0, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player3, 1, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 1, &GameMode::MiserieOpTafel);
+                handle_opposing_players(&mut vec![&mut game.player1], 2, &GameMode::MiserieOpTafel);
+
+                assert_eq!(game.player1.total_points(), 96);
+                assert_eq!(game.player2.total_points(), 72);
+                assert_eq!(game.player3.total_points(), -72);
+                assert_eq!(game.player4.total_points(), -72);
+            }
+            #[test]
+            fn test_3_players_2_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 1, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player3, 0, &GameMode::MiserieOpTafel);
+                handle_playing_player(&mut game.player4, 0, &GameMode::MiserieOpTafel);
+                handle_opposing_players(&mut vec![&mut game.player1], 1, &GameMode::MiserieOpTafel);
+
+                assert_eq!(game.player1.total_points(), 48);
+                assert_eq!(game.player2.total_points(), -72);
+                assert_eq!(game.player3.total_points(), 72);
+                assert_eq!(game.player4.total_points(), 72);
+            }
+        }
+    }
 }
