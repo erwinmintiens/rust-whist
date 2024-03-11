@@ -27,7 +27,7 @@ pub fn run_troel(mut game: Game, game_mode: GameMode) -> Game {
         break;
     }
     let tricks_to_achieve = get_tricks_to_achieve(8, 9);
-    let tricks_achieved = get_tricks_achieved(0, 13);
+    let tricks_achieved = get_tricks_achieved(0, 13, None);
     troel_points(&mut game, tricks_to_achieve, tricks_achieved);
     game
 }

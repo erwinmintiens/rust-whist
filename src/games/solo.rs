@@ -19,7 +19,7 @@ pub fn run_solo(mut game: Game, game_mode: GameMode) -> Game {
         break;
     }
     let tricks_to_achieve = get_tricks_to_achieve(6, 8);
-    let tricks_achieved = get_tricks_achieved(0, 13);
+    let tricks_achieved = get_tricks_achieved(0, 13, None);
     solo_points(&mut game, tricks_to_achieve, tricks_achieved);
     game
 }

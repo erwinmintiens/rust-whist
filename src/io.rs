@@ -35,9 +35,14 @@ pub fn get_tricks_to_achieve(minimum: u8, maximum: u8) -> u8 {
     return get_u8_input(message, minimum, maximum);
 }
 
-pub fn get_tricks_achieved(minimum: u8, maximum: u8) -> u8 {
-    let message = "How many tricks were achieved?";
-    return get_u8_input(message, minimum, maximum);
+pub fn get_tricks_achieved(minimum: u8, maximum: u8, player_name: Option<&str>) -> u8 {
+    let mut message = String::from("How many tricks were achieved");
+    if player_name.is_some() {
+        let string_to_push = format!(" for player {}", player_name.unwrap());
+        message.push_str(&string_to_push);
+    }
+    message.push_str("?");
+    return get_u8_input(&message, minimum, maximum);
 }
 
 fn get_u8_input(message: &str, minimum: u8, maximum: u8) -> u8 {

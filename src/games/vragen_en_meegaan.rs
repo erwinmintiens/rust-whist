@@ -30,7 +30,7 @@ pub fn run_vragen_en_meegaan(mut game: Game, game_mode: GameMode) -> Game {
         break;
     }
     let tricks_to_achieve = get_tricks_to_achieve(8, 13);
-    let tricks_achieved = get_tricks_achieved(0, 13);
+    let tricks_achieved = get_tricks_achieved(0, 13, None);
     vragen_en_meegaan_points(&mut game, tricks_to_achieve, tricks_achieved);
     game
 }
