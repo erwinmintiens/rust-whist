@@ -19,10 +19,24 @@ pub fn miserie_points(game: &mut Game, game_mode: GameMode) {
 /// Returns `true` in case the player succeeded, `false` in case the player failed.
 fn handle_playing_player(player: &mut Player, tricks_achieved: u8, game_mode: &GameMode) -> bool {
     player.tricks_achieved_current_round = Some(tricks_achieved);
-    if tricks_achieved > 0 {
+    if tricks_achieved == 0 || (tricks_achieved == 1 && *game_mode == GameMode::Piccolo) {
+        player.succeeded_current_round = true;
+        player.add_points(match game_mode {
+            GameMode::KleineMiserie => 18,
+            GameMode::Piccolo => 27,
+            GameMode::GroteMiserie => 36,
+            GameMode::MiserieOpTafel => 72,
+            _ => {
+                eprintln!("Unexpected GameMode while handling miserie: {}", game_mode);
+                0
+            }
+        });
+        return true;
+    } else {
         player.succeeded_current_round = false;
         player.add_points(match game_mode {
             GameMode::KleineMiserie => -18,
+            GameMode::Piccolo => -27,
             GameMode::GroteMiserie => -36,
             GameMode::MiserieOpTafel => -72,
             _ => {
@@ -32,17 +46,6 @@ fn handle_playing_player(player: &mut Player, tricks_achieved: u8, game_mode: &G
         });
         return false;
     }
-    player.succeeded_current_round = true;
-    player.add_points(match game_mode {
-        GameMode::KleineMiserie => 18,
-        GameMode::GroteMiserie => 36,
-        GameMode::MiserieOpTafel => 72,
-        _ => {
-            eprintln!("Unexpected GameMode while handling miserie: {}", game_mode);
-            0
-        }
-    });
-    true
 }
 
 fn handle_opposing_players(
@@ -55,6 +58,7 @@ fn handle_opposing_players(
             player.succeeded_current_round = true;
             player.add_points(match game_mode {
                 GameMode::KleineMiserie => 12 * number_of_failed_players as i32,
+                GameMode::Piccolo => 18 * number_of_failed_players as i32,
                 GameMode::GroteMiserie => 24 * number_of_failed_players as i32,
                 GameMode::MiserieOpTafel => 48 * number_of_failed_players as i32,
                 _ => {

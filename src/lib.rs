@@ -7,7 +7,6 @@ use crate::io::{do_you_want_to_quit, game_mode_selector, main_menu as menu_io, r
 use games::abondance::{run_abondance, run_solo_slim};
 use games::game_modes::GameMode;
 use games::miserie::run_miserie;
-use games::piccolo::run_piccolo;
 use games::solo::run_solo;
 use games::troel::run_troel;
 use games::vragen_en_meegaan::run_vragen_en_meegaan;
@@ -79,7 +78,7 @@ fn run(mut game: Game, game_mode: GameMode) -> Game {
         GameMode::Solo => run_solo(game, game_mode),
         GameMode::VragenEnMeegaan => run_vragen_en_meegaan(game, game_mode),
         GameMode::Troel => run_troel(game, game_mode),
-        GameMode::Piccolo => run_piccolo(game, game_mode),
+        GameMode::Piccolo => run_miserie(game, game_mode),
         GameMode::KleineMiserie => run_miserie(game, game_mode),
         GameMode::GroteMiserie => run_miserie(game, game_mode),
         GameMode::MiserieOpTafel => run_miserie(game, game_mode),

@@ -1,5 +1,5 @@
 use super::game_modes::GameMode;
-use crate::io::{get_tricks_achieved, multiple_player_selector};
+use crate::io::multiple_player_selector;
 use crate::models::game::Game;
 use crate::points::miserie::miserie_points;
 
@@ -13,6 +13,10 @@ pub fn run_miserie(mut game: Game, game_mode: GameMode) -> Game {
                     continue;
                 }
             };
+        if playing_players.len() == 0 {
+            eprint!("Please select a minimum of 1 player");
+            continue;
+        }
         for player in playing_players.iter_mut() {
             player.playing_player = true;
         }
