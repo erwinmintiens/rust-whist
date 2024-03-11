@@ -35,30 +35,11 @@ impl Game {
         result
     }
 
-    pub fn fail_all_players_except(&mut self, player: &mut Player) {
-        self.fail_all_players();
-        player.succeeded_current_round = true;
-    }
-
     pub fn reset_all_playing_players(&mut self) {
         self.player1.playing_player = false;
         self.player2.playing_player = false;
         self.player3.playing_player = false;
         self.player4.playing_player = false;
-    }
-
-    pub fn fail_all_players(&mut self) {
-        self.player1.succeeded_current_round = false;
-        self.player2.succeeded_current_round = false;
-        self.player3.succeeded_current_round = false;
-        self.player4.succeeded_current_round = false;
-    }
-
-    pub fn succeed_all_players(&mut self) {
-        self.player1.succeeded_current_round = true;
-        self.player2.succeeded_current_round = true;
-        self.player3.succeeded_current_round = true;
-        self.player4.succeeded_current_round = true;
     }
 
     pub fn clear_all_player_points(&mut self) {
