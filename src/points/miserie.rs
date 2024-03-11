@@ -19,7 +19,9 @@ pub fn miserie_points(game: &mut Game, game_mode: GameMode) {
 /// Returns `true` in case the player succeeded, `false` in case the player failed.
 fn handle_playing_player(player: &mut Player, tricks_achieved: u8, game_mode: &GameMode) -> bool {
     player.tricks_achieved_current_round = Some(tricks_achieved);
-    if tricks_achieved == 0 || (tricks_achieved == 1 && *game_mode == GameMode::Piccolo) {
+    if (tricks_achieved == 0 && *game_mode != GameMode::Piccolo)
+        || (tricks_achieved == 1 && *game_mode == GameMode::Piccolo)
+    {
         player.succeeded_current_round = true;
         player.add_points(match game_mode {
             GameMode::KleineMiserie => 18,
@@ -228,6 +230,146 @@ mod tests {
             }
         }
     }
+
+    mod piccolo {
+        use super::*;
+
+        mod success {
+
+            use super::*;
+
+            #[test]
+            fn test_1_player_1_succeeds() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player1, 1, &GameMode::Piccolo);
+
+                assert_eq!(game.player1.total_points(), 27);
+                assert_eq!(game.player2.total_points(), 0);
+                assert_eq!(game.player3.total_points(), 0);
+                assert_eq!(game.player4.total_points(), 0);
+            }
+
+            #[test]
+            fn test_2_players_2_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player1, 1, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 1, &GameMode::Piccolo);
+
+                assert_eq!(game.player1.total_points(), 27);
+                assert_eq!(game.player4.total_points(), 27);
+                assert_eq!(game.player3.total_points(), 0);
+                assert_eq!(game.player2.total_points(), 0);
+            }
+
+            #[test]
+            fn test_3_players_3_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 1, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player3, 1, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 1, &GameMode::Piccolo);
+
+                assert_eq!(game.player2.total_points(), 27);
+                assert_eq!(game.player3.total_points(), 27);
+                assert_eq!(game.player4.total_points(), 27);
+                assert_eq!(game.player1.total_points(), 0);
+            }
+        }
+
+        mod failure {
+            use super::*;
+
+            #[test]
+            fn test_1_player_0_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 2, &GameMode::Piccolo);
+                handle_opposing_players(
+                    &mut vec![&mut game.player1, &mut game.player3, &mut game.player4],
+                    1,
+                    &GameMode::Piccolo,
+                );
+
+                assert_eq!(game.player2.total_points(), -27);
+                assert_eq!(game.player3.total_points(), 18);
+                assert_eq!(game.player4.total_points(), 18);
+                assert_eq!(game.player1.total_points(), 18);
+            }
+
+            #[test]
+            fn test_2_players_0_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player3, 0, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 0, &GameMode::Piccolo);
+                handle_opposing_players(
+                    &mut vec![&mut game.player1, &mut game.player2],
+                    2,
+                    &GameMode::Piccolo,
+                );
+
+                assert_eq!(game.player1.total_points(), 36);
+                assert_eq!(game.player2.total_points(), 36);
+                assert_eq!(game.player3.total_points(), -27);
+                assert_eq!(game.player4.total_points(), -27);
+            }
+
+            #[test]
+            fn test_2_players_1_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player3, 1, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 0, &GameMode::Piccolo);
+                handle_opposing_players(
+                    &mut vec![&mut game.player1, &mut game.player2],
+                    1,
+                    &GameMode::Piccolo,
+                );
+
+                assert_eq!(game.player1.total_points(), 18);
+                assert_eq!(game.player2.total_points(), 18);
+                assert_eq!(game.player3.total_points(), 27);
+                assert_eq!(game.player4.total_points(), -27);
+            }
+
+            #[test]
+            fn test_3_players_0_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 0, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player3, 0, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 0, &GameMode::Piccolo);
+                handle_opposing_players(&mut vec![&mut game.player1], 3, &GameMode::Piccolo);
+
+                assert_eq!(game.player1.total_points(), 54);
+                assert_eq!(game.player2.total_points(), -27);
+                assert_eq!(game.player3.total_points(), -27);
+                assert_eq!(game.player4.total_points(), -27);
+            }
+            #[test]
+            fn test_3_players_1_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 1, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player3, 0, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 0, &GameMode::Piccolo);
+                handle_opposing_players(&mut vec![&mut game.player1], 2, &GameMode::Piccolo);
+
+                assert_eq!(game.player1.total_points(), 36);
+                assert_eq!(game.player2.total_points(), 27);
+                assert_eq!(game.player3.total_points(), -27);
+                assert_eq!(game.player4.total_points(), -27);
+            }
+            #[test]
+            fn test_3_players_2_succeed() {
+                let mut game = setup_game();
+                handle_playing_player(&mut game.player2, 0, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player3, 1, &GameMode::Piccolo);
+                handle_playing_player(&mut game.player4, 1, &GameMode::Piccolo);
+                handle_opposing_players(&mut vec![&mut game.player1], 1, &GameMode::Piccolo);
+
+                assert_eq!(game.player1.total_points(), 18);
+                assert_eq!(game.player2.total_points(), -27);
+                assert_eq!(game.player3.total_points(), 27);
+                assert_eq!(game.player4.total_points(), 27);
+            }
+        }
+    }
+
     mod grote_miserie {
         use super::*;
 
