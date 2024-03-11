@@ -150,5 +150,11 @@ mod tests {
         abondance_10_achieves_13: (10, 13, 45, 0),
         abondance_11_achieves_11: (11, 11, 60, 0),
         abondance_11_achieves_12: (11, 12, 60, 0),
+        abondance_9_achieves_8: (9, 8, -30, 20),
+        abondance_9_achieves_0: (9, 0, -30, 20),
+        abondance_10_achieves_9: (10, 9, -45, 30),
+        abondance_10_achieves_8: (10, 8, -45, 30),
+        abondance_11_achieves_10: (11, 10, -60, 40),
+        abondance_11_achieves_7: (11, 7, -60, 40),
     }
 }
