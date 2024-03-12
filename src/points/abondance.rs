@@ -157,4 +157,38 @@ mod tests {
         abondance_11_achieves_10: (11, 10, -60, 40),
         abondance_11_achieves_7: (11, 7, -60, 40),
     }
+
+    macro_rules! solo_slim_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (to_achieve, achieved, player_expected, opposing_players_points) = $value;
+                let mut game = setup_game();
+                let mut players = vec![&mut game.player2, &mut game.player3, &mut game.player4];
+                let player = &mut game.player1;
+
+                solo_slim_points(
+                    player,
+                    &mut players,
+                    achieved,
+                    to_achieve,
+                );
+
+                assert_eq!(player.total_points(), player_expected);
+                for player in players {
+                    assert_eq!(player.total_points(), opposing_players_points);
+                }
+            }
+        )*
+        }
+    }
+
+    solo_slim_tests! {
+        solo_slim_12_achieves_10: (12, 10, -100, 66),
+        solo_slim_12_achieves_12: (12, 12, 100, 0),
+        solo_slim_12_achieves_13: (12, 13, 100, 0),
+        solo_slim_13_achieves_12: (13, 12, -150, 100),
+        solo_slim_13_achieves_13: (13, 13, 150, 0),
+    }
 }
