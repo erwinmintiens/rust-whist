@@ -5,7 +5,7 @@ use crate::models::{
 };
 use inquire::{InquireError, MultiSelect, Select, Text};
 
-pub fn game_mode_selector() -> GameMode {
+pub fn game_mode_selector() -> Option<GameMode> {
     loop {
         let options: Vec<GameMode> = vec![
             GameMode::Solo,
@@ -21,9 +21,11 @@ pub fn game_mode_selector() -> GameMode {
 
         let answer = Select::new("Select your game mode:", options).prompt();
         match answer {
-            Ok(choice) => return choice,
+            Ok(choice) => return Some(choice),
             Err(_) => {
-                do_you_want_to_quit();
+                if let Some(true) = do_you_want_to_return_to_main_menu() {
+                    return None;
+                }
                 continue;
             }
         };
@@ -122,6 +124,25 @@ pub fn do_you_want_to_quit() {
         }
         Err(_) => {
             println!("An error occurred while selecting choice. Please try again.");
+        }
+    };
+}
+
+pub fn do_you_want_to_return_to_main_menu() -> Option<bool> {
+    println!();
+    let options: Vec<&str> = vec!["No", "Yes"];
+
+    let answer = Select::new("Do you want to return to the main menu?", options).prompt();
+    match answer {
+        Ok(choice) => {
+            if choice == "Yes" {
+                return Some(true);
+            }
+            return Some(false);
+        }
+        Err(_) => {
+            println!("An error occurred while selecting choice. Please try again.");
+            return None;
         }
     };
 }

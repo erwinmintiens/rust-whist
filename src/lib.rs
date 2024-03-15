@@ -1,10 +1,11 @@
+mod error;
 mod games;
 mod io;
 mod models;
 mod points;
 mod utils;
 use crate::io::{do_you_want_to_quit, game_mode_selector, main_menu as menu_io, read_player};
-use games::abondance::{run_abondance, run_solo_slim};
+use games::abondance::run_abondance;
 use games::game_modes::GameMode;
 use games::miserie::run_miserie;
 use games::solo::run_solo;
@@ -50,9 +51,11 @@ fn main_menu(game: Game) -> Game {
 
 pub fn start_next_round(mut game: Game) -> Game {
     game.reset_all_playing_players();
-    let game_mode = game_mode_selector();
-    println!("Chosen game mode: {game_mode}");
-    return run(game, game_mode);
+    if let Some(game_mode) = game_mode_selector() {
+        println!("Chosen game mode: {game_mode}");
+        return run(game, game_mode);
+    }
+    return game;
 }
 
 fn settings(mut game: Game) -> Game {
@@ -83,7 +86,7 @@ fn run(mut game: Game, game_mode: GameMode) -> Game {
         GameMode::GroteMiserie => run_miserie(game, game_mode),
         GameMode::MiserieOpTafel => run_miserie(game, game_mode),
         GameMode::Abondance => run_abondance(game, game_mode),
-        GameMode::SoloSlim => run_solo_slim(game, game_mode),
+        GameMode::SoloSlim => run_abondance(game, game_mode),
     };
     game.display_all_player_points();
     game

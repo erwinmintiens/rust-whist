@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use crate::{
     io::{get_tricks_achieved, get_tricks_to_achieve, multiple_player_selector},
     models::game::Game,
