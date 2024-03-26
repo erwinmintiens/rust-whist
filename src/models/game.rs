@@ -1,4 +1,4 @@
-use std::{fmt, io::Write};
+use std::fmt;
 
 #[derive(Debug)]
 pub struct Game {

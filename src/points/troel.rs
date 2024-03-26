@@ -2,7 +2,7 @@ use crate::models::game::{Game, Player, Points};
 use crate::utils::{add_points_to_players, get_playing_and_opposing_players};
 
 pub fn troel_points(game: &mut Game, tricks_to_achieve: u8, tricks_achieved: u8) {
-    let points: Points = points(game, tricks_to_achieve, tricks_achieved);
+    let points = points(game, tricks_to_achieve, tricks_achieved);
     add_points_to_players(game, points.playing_points, points.opposing_points);
 }
 
